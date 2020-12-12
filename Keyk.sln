@@ -5,6 +5,10 @@ VisualStudioVersion = 16.0.30804.86
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Keyk", "Keyk\Keyk.csproj", "{5932538E-1272-4D09-A9AB-F3D70F0B3532}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{4B002DFA-3C58-4FD1-A31E-57C167EBB93E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KeykConsole", "Tests\KeykConsole\KeykConsole.csproj", "{7021B6C6-CA57-422D-B2CB-5F3E54CAB5D1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,9 +19,16 @@ Global
 		{5932538E-1272-4D09-A9AB-F3D70F0B3532}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5932538E-1272-4D09-A9AB-F3D70F0B3532}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5932538E-1272-4D09-A9AB-F3D70F0B3532}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7021B6C6-CA57-422D-B2CB-5F3E54CAB5D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7021B6C6-CA57-422D-B2CB-5F3E54CAB5D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7021B6C6-CA57-422D-B2CB-5F3E54CAB5D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7021B6C6-CA57-422D-B2CB-5F3E54CAB5D1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{7021B6C6-CA57-422D-B2CB-5F3E54CAB5D1} = {4B002DFA-3C58-4FD1-A31E-57C167EBB93E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {382BDF86-223F-413F-8785-EC5039C9DE15}
