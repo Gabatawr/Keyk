@@ -15,7 +15,7 @@
 
         Background="#F333"
         
-        vm:MouseBehaviour.MouseLeftButtonDownCommand="{Binding MoveApplicationCommand}">
+        vm:MouseCommands.MouseLeftButtonDown="{Binding MoveApplicationCommand}">
 
     <Window.DataContext>
         <vm:MainWindowViewModel/>
@@ -151,7 +151,8 @@
 
                 <Border x:Name="DifficultyBorder" ToolTip="Difficulty"
                         Opacity="0.6" Margin="0.5,0.5" CornerRadius="6"
-                        vm:MouseBehaviour.MouseMoveCommand="{Binding DifficultyChangedCommand}">
+                        vm:MouseCommands.MouseMove="{Binding DifficultyChangedCommand}"
+                        vm:MouseCommands.MouseLeftButtonDown="{Binding DifficultyChangedCommand}">
 
                     <Border.Background>
                         <LinearGradientBrush StartPoint="0,1">
