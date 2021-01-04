@@ -5,6 +5,20 @@ namespace Keyk.ViewModels
 {
     public class KeyboardCommands
     {
+        #region BackspaceDown
+
+        public static readonly DependencyProperty BackspaceDownProperty = DependencyProperty.RegisterAttached
+        (
+            "BackspaceDown", typeof(ICommand), typeof(KeyboardCommands),
+            new FrameworkPropertyMetadata(new PropertyChangedCallback(BackspaceDownChanged))
+        );
+        private static void element_BackspaceDown(object sender, KeyEventArgs e) => GetBackspaceDown((FrameworkElement)sender).Execute(e);
+        private static void BackspaceDownChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) => ((FrameworkElement)d).KeyDown += element_BackspaceDown;
+        public static ICommand GetBackspaceDown(UIElement element) => (ICommand)element.GetValue(BackspaceDownProperty);
+        public static void SetBackspaceDown(UIElement element, ICommand value) => element.SetValue(BackspaceDownProperty, value);
+
+        #endregion
+
         #region ShiftUp
 
         public static readonly DependencyProperty ShiftUpProperty = DependencyProperty.RegisterAttached
@@ -16,6 +30,7 @@ namespace Keyk.ViewModels
         private static void ShiftUpChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) => ((FrameworkElement)d).KeyUp += element_ShiftUp;
         public static ICommand GetShiftUp(UIElement element) => (ICommand)element.GetValue(ShiftUpProperty);
         public static void SetShiftUp(UIElement element, ICommand value) => element.SetValue(ShiftUpProperty, value);
+
         #endregion
 
         #region ShiftDown
@@ -43,6 +58,34 @@ namespace Keyk.ViewModels
         private static void CapsLockDownChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) => ((FrameworkElement)d).KeyDown += element_CapsLockDown;
         public static ICommand GetCapsLockDown(UIElement element) => (ICommand)element.GetValue(CapsLockDownProperty);
         public static void SetCapsLockDown(UIElement element, ICommand value) => element.SetValue(CapsLockDownProperty, value);
+
+        #endregion
+
+        #region PrintKeyDown
+
+        public static readonly DependencyProperty PrintKeyDownProperty = DependencyProperty.RegisterAttached
+        (
+            "PrintKeyDown", typeof(ICommand), typeof(KeyboardCommands),
+            new FrameworkPropertyMetadata(new PropertyChangedCallback(PrintKeyDownChanged))
+        );
+        private static void element_PrintKeyDown(object sender, KeyEventArgs e) => GetPrintKeyDown((FrameworkElement)sender).Execute(e);
+        private static void PrintKeyDownChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) => ((FrameworkElement)d).KeyDown += element_PrintKeyDown;
+        public static ICommand GetPrintKeyDown(UIElement element) => (ICommand)element.GetValue(PrintKeyDownProperty);
+        public static void SetPrintKeyDown(UIElement element, ICommand value) => element.SetValue(PrintKeyDownProperty, value);
+
+        #endregion
+
+        #region PrintKeyUp
+
+        public static readonly DependencyProperty PrintKeyUpProperty = DependencyProperty.RegisterAttached
+        (
+            "PrintKeyUp", typeof(ICommand), typeof(KeyboardCommands),
+            new FrameworkPropertyMetadata(new PropertyChangedCallback(PrintKeyUpChanged))
+        );
+        private static void element_PrintKeyUp(object sender, KeyEventArgs e) => GetPrintKeyUp((FrameworkElement)sender).Execute(e);
+        private static void PrintKeyUpChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) => ((FrameworkElement)d).KeyUp += element_PrintKeyUp;
+        public static ICommand GetPrintKeyUp(UIElement element) => (ICommand)element.GetValue(PrintKeyUpProperty);
+        public static void SetPrintKeyUp(UIElement element, ICommand value) => element.SetValue(PrintKeyUpProperty, value);
 
         #endregion
     }

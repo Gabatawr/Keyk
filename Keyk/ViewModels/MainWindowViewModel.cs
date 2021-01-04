@@ -1,16 +1,66 @@
-﻿using System.Windows;
-using System.Windows.Input;
+﻿using System.Drawing;
+using System.Linq;
+using System.Threading;
 using Keyk.Infrastructure.Commands;
 using Keyk.Infrastructure.Commands.Base;
 using Keyk.ViewModels.Base;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
+using System.Windows.Media;
+using Keyk.Views.Windows;
 
 namespace Keyk.ViewModels
 {
     internal class MainWindowViewModel : ViewModel
     {
+        #region Fields
+        //------------------------------------------------------------------------------
+
+        private readonly Key[] _keys = new[]
+        {
+            Key.Oem3, Key.D1, Key.D2, Key.D3, Key.D4, Key.D5, Key.D6, Key.D7, Key.D8, Key.D9, Key.D0, Key.OemMinus, Key.OemPlus,
+            Key.Q, Key.W, Key.E, Key.R, Key.T, Key.Y, Key.U, Key.I, Key.O, Key.P, Key.OemOpenBrackets, Key.Oem6, Key.Oem5,
+            Key.A, Key.S, Key.D, Key.F, Key.G, Key.H, Key.J, Key.K, Key.L, Key.Oem1, Key.OemQuotes,
+            Key.Z, Key.X, Key.C, Key.V, Key.B, Key.N, Key.M, Key.OemComma, Key.OemPeriod, Key.OemQuestion, Key.Space
+        };
+        private readonly Key[] _ckeys = new[]
+        {
+            Key.Back,
+            Key.Tab,
+            Key.CapsLock, Key.Enter,
+            Key.LeftShift, Key.RightShift,
+            Key.LeftCtrl, Key.LWin, Key.System, Key.System, Key.RWin, Key.RightCtrl
+        };
+        private readonly char[] _symbols = new[]
+        {
+            '`', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=',
+            'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', '\\',
+            'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', '\'',
+            'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/', ' '
+        };
+        private readonly char[] _symbolsShift = new[]
+        {
+            '~', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+',
+            'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', '{', '}', '|',
+            'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', ':', '"',
+            'Z', 'X', 'C', 'V', 'B', 'N', 'M', '<', '>', '?', ' '
+        };
+        private readonly string[] _commandKey = new[]
+        {
+            "Backspace",
+            "Tab",
+            "Caps Lock", "Enter",
+            "Shift",
+            "Ctrl", "Win", "Alt", "Space"
+        };
+
+        //------------------------------------------------------------------------------
+        #endregion
+
         public MainWindowViewModel()
         {
-            Symbols = (Keyboard.IsKeyToggled(Key.CapsLock)) ? _symbolsShift : _symbols;
+            Symbols = Keyboard.IsKeyToggled(Key.CapsLock) ? _symbolsShift : _symbols;
             CommandKey = _commandKey;
         }
 
@@ -55,6 +105,33 @@ namespace Keyk.ViewModels
         //--------------------------------------------------------------------
         #endregion
 
+        #region Command : _BackspaceDownCommand
+        //--------------------------------------------------------------------
+
+        private Command _BackspaceDownCommand;
+        public Command BackspaceDownCommand
+        {
+            get => _BackspaceDownCommand ?? new ActionCommand
+            (
+                param => ExecuteBackspaceDownCommand((KeyEventArgs)param),
+                param => CanExecuteBackspaceDownCommand((KeyEventArgs)param)
+            );
+            set => _BackspaceDownCommand = value;
+        }
+
+        private void ExecuteBackspaceDownCommand(KeyEventArgs e)
+        {
+            if (EnterText?.Length == 1)
+                EnterText = null;
+
+            else if (EnterText?.Length > 1)
+                EnterText = EnterText.Substring(0, EnterText.Length - 1);
+        }
+        private bool CanExecuteBackspaceDownCommand(KeyEventArgs e) => e.Key == Key.Back;
+
+        //--------------------------------------------------------------------
+        #endregion
+
         #region Command : _ShiftDownCommand
         //--------------------------------------------------------------------
 
@@ -68,11 +145,7 @@ namespace Keyk.ViewModels
             );
             set => _ShiftDownCommand = value;
         }
-
-        private void ExecuteShiftDownCommand(KeyEventArgs e)
-        {
-            Symbols = (Keyboard.IsKeyToggled(Key.CapsLock)) ? _symbols : _symbolsShift;
-        }
+        private void ExecuteShiftDownCommand(KeyEventArgs e) => Symbols = Keyboard.IsKeyToggled(Key.CapsLock) ? _symbols : _symbolsShift;
         private bool CanExecuteShiftDownCommand(KeyEventArgs e) => e.Key == Key.LeftShift || e.Key == Key.RightShift;
 
         //--------------------------------------------------------------------
@@ -91,11 +164,7 @@ namespace Keyk.ViewModels
             );
             set => _ShiftUpCommand = value;
         }
-
-        private void ExecuteShiftUpCommand(KeyEventArgs e)
-        {
-            Symbols = (Keyboard.IsKeyToggled(Key.CapsLock)) ? _symbolsShift : _symbols;
-        }
+        private void ExecuteShiftUpCommand(KeyEventArgs e) => Symbols = Keyboard.IsKeyToggled(Key.CapsLock) ? _symbolsShift : _symbols;
         private bool CanExecuteShiftUpCommand(KeyEventArgs e) => e.Key == Key.LeftShift || e.Key == Key.RightShift;
 
         //--------------------------------------------------------------------
@@ -114,12 +183,101 @@ namespace Keyk.ViewModels
             );
             set => _CapsLockDownCommand = value;
         }
-
-        private void ExecuteCapsLockDownCommand(KeyEventArgs e)
-        {
-            Symbols = (Keyboard.IsKeyToggled(Key.CapsLock)) ? _symbolsShift : _symbols;
-        }
+        private void ExecuteCapsLockDownCommand(KeyEventArgs e) => Symbols = Keyboard.IsKeyToggled(Key.CapsLock) ? _symbolsShift : _symbols;
         private bool CanExecuteCapsLockDownCommand(KeyEventArgs e) => e.Key == Key.CapsLock;
+
+        //--------------------------------------------------------------------
+        #endregion
+
+        #region Command : _PrintKeyDownCommand
+        //--------------------------------------------------------------------
+
+        private Command _PrintKeyDownCommand;
+        public Command PrintKeyDownCommand
+        {
+            get => _PrintKeyDownCommand ?? new ActionCommand
+            (
+                param => ExecutePrintKeyDownCommand((KeyEventArgs)param),
+                param => CanExecutePrintKeyDownCommand((KeyEventArgs)param)
+            );
+            set => _PrintKeyDownCommand = value;
+        }
+
+        private void ExecutePrintKeyDownCommand(KeyEventArgs e)
+        {
+            for (int i = 0; i < _keys.Length; i++)
+            {
+                if (e.Key == _keys[i])
+                {
+                    EnterText += Symbols[i].ToString();
+                    ( (Button)(((MainWindow)e.Source).FindName("Key" + i)) ).Opacity = 1;
+                }
+            }
+        }
+
+        private bool CanExecutePrintKeyDownCommand(KeyEventArgs e)
+        {
+            foreach (var k in _keys) 
+                if (e.Key == k) return true;
+
+            for (int i = 0; i < _ckeys.Length; i++)
+            {
+                if (e.Key == _ckeys[i])
+                {
+                    if (e.Key == Key.System && Keyboard.IsKeyDown(Key.RightAlt)) i++;
+                    ((Button)(((MainWindow)e.Source).FindName("CKey" + i))).Opacity = 1;
+                    if (e.Key == Key.System && Keyboard.IsKeyDown(Key.LeftAlt)) break;
+                }
+            }
+
+            return false;
+        }
+
+        //--------------------------------------------------------------------
+        #endregion
+
+        #region Command : _PrintKeyUpCommand
+        //--------------------------------------------------------------------
+
+        private Command _PrintKeyUpCommand;
+        public Command PrintKeyUpCommand
+        {
+            get => _PrintKeyUpCommand ?? new ActionCommand
+            (
+                param => ExecutePrintKeyUpCommand((KeyEventArgs)param),
+                param => CanExecutePrintKeyUpCommand((KeyEventArgs)param)
+            );
+            set => _PrintKeyUpCommand = value;
+        }
+
+        private void ExecutePrintKeyUpCommand(KeyEventArgs e)
+        {
+            for (int i = 0; i < _keys.Length; i++)
+            {
+                if (e.Key == _keys[i])
+                {
+                    ((Button)(((MainWindow)e.Source).FindName("Key" + i))).Opacity = 0.6;
+                }
+            }
+        }
+
+        private bool CanExecutePrintKeyUpCommand(KeyEventArgs e)
+        {
+            foreach (var k in _keys)
+                if (e.Key == k) return true;
+
+            for (int i = 0; i < _ckeys.Length; i++)
+            {
+                if (e.Key == _ckeys[i])
+                {
+                    if (e.Key == Key.System && Keyboard.IsKeyDown(Key.RightAlt)) i++;
+                    ((Button)(((MainWindow)e.Source).FindName("CKey" + i))).Opacity = 0.6;
+                    if (e.Key == Key.System && Keyboard.IsKeyDown(Key.LeftAlt)) break;
+                }
+            }
+
+            return false;
+        }
 
         //--------------------------------------------------------------------
         #endregion
@@ -141,23 +299,6 @@ namespace Keyk.ViewModels
         //---------------------------------------------------------------------
         #endregion
 
-        #region Symbols
-
-        private readonly char[] _symbols = new[]
-        {
-            '`', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=',
-            'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', '\\',
-            'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', '\'',
-            'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/',
-        };
-        private readonly char[] _symbolsShift = new[]
-        {
-            '~', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+',
-            'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', '{', '}', '|',
-            'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', ':', '"',
-            'Z', 'X', 'C', 'V', 'B', 'N', 'M', '<', '>', '?',
-        };
-
         #region char[] : _Symbols
         //---------------------------------------------------------------------
 
@@ -170,15 +311,6 @@ namespace Keyk.ViewModels
 
         //---------------------------------------------------------------------
         #endregion
-
-        private readonly string[] _commandKey = new[]
-        {
-            "Backspace",
-            "Tab",
-            "Caps Lock", "Enter",
-            "Shift",
-            "Ctrl", "Win", "Alt", "Space"
-        };
 
         #region string[] : _CommandKey
         //---------------------------------------------------------------------
@@ -193,6 +325,17 @@ namespace Keyk.ViewModels
         //---------------------------------------------------------------------
         #endregion
 
+        #region string : _EnterText
+        //---------------------------------------------------------------------
+
+        private string _EnterText;
+        public string EnterText
+        {
+            get => _EnterText;
+            set => Set(ref _EnterText, value);
+        }
+
+        //---------------------------------------------------------------------
         #endregion
 
         //------------------------------------------------------------------------------

@@ -10,32 +10,26 @@
         WindowStyle="None" AllowsTransparency="True"
         ResizeMode="CanResizeWithGrip"
 
-        Height="340" MinHeight="200"
-        Width="900" MinWidth="340"
+        Height="350" MinHeight="250"
+        Width="900" MinWidth="700"
 
         Background="#F333"
         
         vm:MouseCommands.MouseLeftButtonDown="{Binding MoveApplicationCommand}"
+        
+        vm:KeyboardCommands.BackspaceDown="{Binding BackspaceDownCommand}"
         vm:KeyboardCommands.ShiftDown="{Binding ShiftDownCommand}"
         vm:KeyboardCommands.ShiftUp="{Binding ShiftUpCommand}"
-        vm:KeyboardCommands.CapsLockDown="{Binding CapsLockDownCommand}">
+        vm:KeyboardCommands.CapsLockDown="{Binding CapsLockDownCommand}"
+        vm:KeyboardCommands.PrintKeyDown="{Binding PrintKeyDownCommand}"
+        vm:KeyboardCommands.PrintKeyUp="{Binding PrintKeyUpCommand}">
+
     <!--........................................................................-->
     <Window.DataContext>
         <vm:MainWindowViewModel/>
     </Window.DataContext>
     <!--........................................................................-->
     <Window.Resources>
-        <SolidColorBrush x:Key="BtnLeft_f5"    Color='Red'/>
-        <SolidColorBrush x:Key="BtnLeft_f4"    Color='Orange'/>
-        <SolidColorBrush x:Key="BtnLeft_f3"    Color='Yellow'/>
-        <SolidColorBrush x:Key="BtnLeft_f2"    Color='Green'/>
-        <SolidColorBrush x:Key="BtnLeft_f1"    Color='LightGreen'/>
-        <SolidColorBrush x:Key="BtnRight_f1"    Color='Cyan'/>
-        <SolidColorBrush x:Key="BtnRight_f2"    Color='DodgerBlue'/>
-        <SolidColorBrush x:Key="BtnRight_f3"    Color='Blue'/>
-        <SolidColorBrush x:Key="BtnRight_f4"    Color='BlueViolet'/>
-        <SolidColorBrush x:Key="BtnRight_f5"    Color='Violet'/>
-
         <cmd:MinimizeApplicationCommand x:Key="MinimizeApplicationCommand"/>
         <cmd:CloseApplicationCommand x:Key="CloseApplicationCommand"/>
     </Window.Resources>
@@ -142,8 +136,7 @@
             </StackPanel>
             <!--........................................................................-->
             <DockPanel DockPanel.Dock="Left"
-                       Height="82" Width="Auto"
-                       Visibility="Collapsed">
+                       Height="82" Width="Auto">
                 <!--........................................................................-->
                 <Grid Margin="6">
                     <Grid.RowDefinitions>
@@ -159,7 +152,6 @@
                         <TextBlock Foreground="White" 
                                    FontSize="14" FontFamily="Consolas"
                                    Padding="0,1,0,0">
-                            1234567890ABCDabcd
                         </TextBlock>
 
                     </Border>
@@ -171,8 +163,8 @@
 
                         <TextBlock Foreground="White" 
                                    FontSize="14" FontFamily="Consolas"
-                                   Padding="0,1,0,0">
-                            --------------------------------------------------------------------------------
+                                   Padding="0,1,0,0"
+                                   Text="{Binding EnterText}">
                         </TextBlock>
 
                     </Border>
@@ -183,6 +175,16 @@
         </DockPanel>
 
         <Grid Grid.Row="1" Margin="6">
+            <Grid.Resources>
+                <SolidColorBrush x:Key="BtnLeft_f5"    Color='OrangeRed'/>
+                <SolidColorBrush x:Key="BtnLeft_f4"    Color='Orange'/>
+                <SolidColorBrush x:Key="BtnLeft_f3"    Color='YellowGreen'/>
+                <SolidColorBrush x:Key="BtnLeft_f2"    Color='LimeGreen'/>
+                <SolidColorBrush x:Key="BtnRight_f2"    Color='DeepSkyBlue'/>
+                <SolidColorBrush x:Key="BtnRight_f3"    Color='RoyalBlue'/>
+                <SolidColorBrush x:Key="BtnRight_f4"    Color='MediumPurple'/>
+                <SolidColorBrush x:Key="BtnRight_f5"    Color='Violet'/>
+            </Grid.Resources>
 
             <Grid.RowDefinitions>
                 <RowDefinition/>
@@ -211,20 +213,20 @@
                     <ColumnDefinition Width="2*"/>
                 </Grid.ColumnDefinitions>
 
-                <Button Grid.Column="0" Content="{Binding Symbols[0]}" Background="{StaticResource BtnLeft_f5}"/>
-                <Button Grid.Column="1" Content="{Binding Symbols[1]}" Background="{StaticResource BtnLeft_f5}"/>
-                <Button Grid.Column="2" Content="{Binding Symbols[2]}" Background="{StaticResource BtnLeft_f5}"/>
-                <Button Grid.Column="3" Content="{Binding Symbols[3]}" Background="{StaticResource BtnLeft_f4}"/>
-                <Button Grid.Column="4" Content="{Binding Symbols[4]}" Background="{StaticResource BtnLeft_f3}"/>
-                <Button Grid.Column="5" Content="{Binding Symbols[5]}" Background="{StaticResource BtnLeft_f2}"/>
-                <Button Grid.Column="6" Content="{Binding Symbols[6]}" Background="{StaticResource BtnLeft_f2}"/>
-                <Button Grid.Column="7" Content="{Binding Symbols[7]}" Background="{StaticResource BtnRight_f2}"/>
-                <Button Grid.Column="8" Content="{Binding Symbols[8]}" Background="{StaticResource BtnRight_f2}"/>
-                <Button Grid.Column="9" Content="{Binding Symbols[9]}" Background="{StaticResource BtnRight_f3}"/>
-                <Button Grid.Column="10" Content="{Binding Symbols[10]}" Background="{StaticResource BtnRight_f4}"/>
-                <Button Grid.Column="11" Content="{Binding Symbols[11]}" Background="{StaticResource BtnRight_f5}"/>
-                <Button Grid.Column="12" Content="{Binding Symbols[12]}" Background="{StaticResource BtnRight_f5}"/>
-                <Button Grid.Column="13" Content="{Binding CommandKey[0]}"/>
+                <Button x:Name="Key0" Grid.Column="0" Content="{Binding Symbols[0]}" Background="{StaticResource BtnLeft_f5}"/>
+                <Button x:Name="Key1" Grid.Column="1" Content="{Binding Symbols[1]}" Background="{StaticResource BtnLeft_f5}"/>
+                <Button x:Name="Key2" Grid.Column="2" Content="{Binding Symbols[2]}" Background="{StaticResource BtnLeft_f5}"/>
+                <Button x:Name="Key3" Grid.Column="3" Content="{Binding Symbols[3]}" Background="{StaticResource BtnLeft_f4}"/>
+                <Button x:Name="Key4" Grid.Column="4" Content="{Binding Symbols[4]}" Background="{StaticResource BtnLeft_f3}"/>
+                <Button x:Name="Key5" Grid.Column="5" Content="{Binding Symbols[5]}" Background="{StaticResource BtnLeft_f2}"/>
+                <Button x:Name="Key6" Grid.Column="6" Content="{Binding Symbols[6]}" Background="{StaticResource BtnLeft_f2}"/>
+                <Button x:Name="Key7" Grid.Column="7" Content="{Binding Symbols[7]}" Background="{StaticResource BtnRight_f2}"/>
+                <Button x:Name="Key8" Grid.Column="8" Content="{Binding Symbols[8]}" Background="{StaticResource BtnRight_f2}"/>
+                <Button x:Name="Key9" Grid.Column="9" Content="{Binding Symbols[9]}" Background="{StaticResource BtnRight_f3}"/>
+                <Button x:Name="Key10" Grid.Column="10" Content="{Binding Symbols[10]}" Background="{StaticResource BtnRight_f4}"/>
+                <Button x:Name="Key11" Grid.Column="11" Content="{Binding Symbols[11]}" Background="{StaticResource BtnRight_f5}"/>
+                <Button x:Name="Key12" Grid.Column="12" Content="{Binding Symbols[12]}" Background="{StaticResource BtnRight_f5}"/>
+                <Button x:Name="CKey0" Grid.Column="13" Content="{Binding CommandKey[0]}"/>
 
             </Grid>
 
@@ -247,20 +249,20 @@
                     <ColumnDefinition Width="1.5*"/>
                 </Grid.ColumnDefinitions>
 
-                <Button Grid.Column="0" Content="{Binding CommandKey[1]}"/>
-                <Button Grid.Column="1" Content="{Binding Symbols[13]}" Background="{StaticResource BtnLeft_f5}"/>
-                <Button Grid.Column="2" Content="{Binding Symbols[14]}" Background="{StaticResource BtnLeft_f4}"/>
-                <Button Grid.Column="3" Content="{Binding Symbols[15]}" Background="{StaticResource BtnLeft_f3}"/>
-                <Button Grid.Column="4" Content="{Binding Symbols[16]}" Background="{StaticResource BtnLeft_f2}"/>
-                <Button Grid.Column="5" Content="{Binding Symbols[17]}" Background="{StaticResource BtnLeft_f2}"/>
-                <Button Grid.Column="6" Content="{Binding Symbols[18]}" Background="{StaticResource BtnRight_f2}"/>
-                <Button Grid.Column="7" Content="{Binding Symbols[19]}" Background="{StaticResource BtnRight_f2}"/>
-                <Button Grid.Column="8" Content="{Binding Symbols[20]}" Background="{StaticResource BtnRight_f3}"/>
-                <Button Grid.Column="9" Content="{Binding Symbols[21]}" Background="{StaticResource BtnRight_f4}"/>
-                <Button Grid.Column="10" Content="{Binding Symbols[22]}" Background="{StaticResource BtnRight_f5}"/>
-                <Button Grid.Column="11" Content="{Binding Symbols[23]}" Background="{StaticResource BtnRight_f5}"/>
-                <Button Grid.Column="12" Content="{Binding Symbols[24]}" Background="{StaticResource BtnRight_f5}"/>
-                <Button Grid.Column="13" Content="{Binding Symbols[25]}" Background="{StaticResource BtnRight_f5}"/>
+                <Button x:Name="CKey1" Grid.Column="0" Content="{Binding CommandKey[1]}"/>
+                <Button x:Name="Key13" Grid.Column="1" Content="{Binding Symbols[13]}" Background="{StaticResource BtnLeft_f5}"/>
+                <Button x:Name="Key14" Grid.Column="2" Content="{Binding Symbols[14]}" Background="{StaticResource BtnLeft_f4}"/>
+                <Button x:Name="Key15" Grid.Column="3" Content="{Binding Symbols[15]}" Background="{StaticResource BtnLeft_f3}"/>
+                <Button x:Name="Key16" Grid.Column="4" Content="{Binding Symbols[16]}" Background="{StaticResource BtnLeft_f2}"/>
+                <Button x:Name="Key17" Grid.Column="5" Content="{Binding Symbols[17]}" Background="{StaticResource BtnLeft_f2}"/>
+                <Button x:Name="Key18" Grid.Column="6" Content="{Binding Symbols[18]}" Background="{StaticResource BtnRight_f2}"/>
+                <Button x:Name="Key19" Grid.Column="7" Content="{Binding Symbols[19]}" Background="{StaticResource BtnRight_f2}"/>
+                <Button x:Name="Key20" Grid.Column="8" Content="{Binding Symbols[20]}" Background="{StaticResource BtnRight_f3}"/>
+                <Button x:Name="Key21" Grid.Column="9" Content="{Binding Symbols[21]}" Background="{StaticResource BtnRight_f4}"/>
+                <Button x:Name="Key22" Grid.Column="10" Content="{Binding Symbols[22]}" Background="{StaticResource BtnRight_f5}"/>
+                <Button x:Name="Key23" Grid.Column="11" Content="{Binding Symbols[23]}" Background="{StaticResource BtnRight_f5}"/>
+                <Button x:Name="Key24" Grid.Column="12" Content="{Binding Symbols[24]}" Background="{StaticResource BtnRight_f5}"/>
+                <Button x:Name="Key25" Grid.Column="13" Content="{Binding Symbols[25]}" Background="{StaticResource BtnRight_f5}"/>
 
             </Grid>
 
@@ -282,19 +284,19 @@
                     <ColumnDefinition Width="2*"/>
                 </Grid.ColumnDefinitions>
 
-                <Button Grid.Column="0" Content="{Binding CommandKey[2]}"/>
-                <Button Grid.Column="1" Content="{Binding Symbols[26]}" Background="{StaticResource BtnLeft_f5}"/>
-                <Button Grid.Column="2" Content="{Binding Symbols[27]}" Background="{StaticResource BtnLeft_f4}"/>
-                <Button Grid.Column="3" Content="{Binding Symbols[28]}" Background="{StaticResource BtnLeft_f3}"/>
-                <Button Grid.Column="4" Content="{Binding Symbols[29]}" Background="{StaticResource BtnLeft_f2}"/>
-                <Button Grid.Column="5" Content="{Binding Symbols[30]}" Background="{StaticResource BtnLeft_f2}"/>
-                <Button Grid.Column="6" Content="{Binding Symbols[31]}" Background="{StaticResource BtnRight_f2}"/>
-                <Button Grid.Column="7" Content="{Binding Symbols[32]}" Background="{StaticResource BtnRight_f2}"/>
-                <Button Grid.Column="8" Content="{Binding Symbols[33]}" Background="{StaticResource BtnRight_f3}"/>
-                <Button Grid.Column="9" Content="{Binding Symbols[34]}" Background="{StaticResource BtnRight_f4}"/>
-                <Button Grid.Column="10" Content="{Binding Symbols[35]}" Background="{StaticResource BtnRight_f5}"/>
-                <Button Grid.Column="11" Content="{Binding Symbols[36]}" Background="{StaticResource BtnRight_f5}"/>
-                <Button Grid.Column="12" Content="{Binding CommandKey[3]}"/>
+                <Button x:Name="CKey2" Grid.Column="0" Content="{Binding CommandKey[2]}"/>
+                <Button x:Name="Key26" Grid.Column="1" Content="{Binding Symbols[26]}" Background="{StaticResource BtnLeft_f5}"/>
+                <Button x:Name="Key27" Grid.Column="2" Content="{Binding Symbols[27]}" Background="{StaticResource BtnLeft_f4}"/>
+                <Button x:Name="Key28" Grid.Column="3" Content="{Binding Symbols[28]}" Background="{StaticResource BtnLeft_f3}"/>
+                <Button x:Name="Key29" Grid.Column="4" Content="{Binding Symbols[29]}" Background="{StaticResource BtnLeft_f2}"/>
+                <Button x:Name="Key30" Grid.Column="5" Content="{Binding Symbols[30]}" Background="{StaticResource BtnLeft_f2}"/>
+                <Button x:Name="Key31" Grid.Column="6" Content="{Binding Symbols[31]}" Background="{StaticResource BtnRight_f2}"/>
+                <Button x:Name="Key32" Grid.Column="7" Content="{Binding Symbols[32]}" Background="{StaticResource BtnRight_f2}"/>
+                <Button x:Name="Key33" Grid.Column="8" Content="{Binding Symbols[33]}" Background="{StaticResource BtnRight_f3}"/>
+                <Button x:Name="Key34" Grid.Column="9" Content="{Binding Symbols[34]}" Background="{StaticResource BtnRight_f4}"/>
+                <Button x:Name="Key35" Grid.Column="10" Content="{Binding Symbols[35]}" Background="{StaticResource BtnRight_f5}"/>
+                <Button x:Name="Key36" Grid.Column="11" Content="{Binding Symbols[36]}" Background="{StaticResource BtnRight_f5}"/>
+                <Button x:Name="CKey3" Grid.Column="12" Content="{Binding CommandKey[3]}"/>
 
             </Grid>
 
@@ -315,18 +317,18 @@
                     <ColumnDefinition Width="2.5*"/>
                 </Grid.ColumnDefinitions>
 
-                <Button Grid.Column="0" Content="{Binding CommandKey[4]}"/>
-                <Button Grid.Column="1" Content="{Binding Symbols[37]}" Background="{StaticResource BtnLeft_f5}"/>
-                <Button Grid.Column="2" Content="{Binding Symbols[38]}" Background="{StaticResource BtnLeft_f4}"/>
-                <Button Grid.Column="3" Content="{Binding Symbols[39]}" Background="{StaticResource BtnLeft_f3}"/>
-                <Button Grid.Column="4" Content="{Binding Symbols[40]}" Background="{StaticResource BtnLeft_f2}"/>
-                <Button Grid.Column="5" Content="{Binding Symbols[41]}" Background="{StaticResource BtnLeft_f2}"/>
-                <Button Grid.Column="6" Content="{Binding Symbols[42]}" Background="{StaticResource BtnRight_f2}"/>
-                <Button Grid.Column="7" Content="{Binding Symbols[43]}" Background="{StaticResource BtnRight_f2}"/>
-                <Button Grid.Column="8" Content="{Binding Symbols[44]}" Background="{StaticResource BtnRight_f3}"/>
-                <Button Grid.Column="9" Content="{Binding Symbols[45]}" Background="{StaticResource BtnRight_f4}"/>
-                <Button Grid.Column="10" Content="{Binding Symbols[46]}" Background="{StaticResource BtnRight_f5}"/>
-                <Button Grid.Column="11" Content="{Binding CommandKey[4]}"/>
+                <Button x:Name="CKey4" Grid.Column="0" Content="{Binding CommandKey[4]}"/>
+                <Button x:Name="Key37" Grid.Column="1" Content="{Binding Symbols[37]}" Background="{StaticResource BtnLeft_f5}"/>
+                <Button x:Name="Key38" Grid.Column="2" Content="{Binding Symbols[38]}" Background="{StaticResource BtnLeft_f4}"/>
+                <Button x:Name="Key39" Grid.Column="3" Content="{Binding Symbols[39]}" Background="{StaticResource BtnLeft_f3}"/>
+                <Button x:Name="Key40" Grid.Column="4" Content="{Binding Symbols[40]}" Background="{StaticResource BtnLeft_f2}"/>
+                <Button x:Name="Key41" Grid.Column="5" Content="{Binding Symbols[41]}" Background="{StaticResource BtnLeft_f2}"/>
+                <Button x:Name="Key42" Grid.Column="6" Content="{Binding Symbols[42]}" Background="{StaticResource BtnRight_f2}"/>
+                <Button x:Name="Key43" Grid.Column="7" Content="{Binding Symbols[43]}" Background="{StaticResource BtnRight_f2}"/>
+                <Button x:Name="Key44" Grid.Column="8" Content="{Binding Symbols[44]}" Background="{StaticResource BtnRight_f3}"/>
+                <Button x:Name="Key45" Grid.Column="9" Content="{Binding Symbols[45]}" Background="{StaticResource BtnRight_f4}"/>
+                <Button x:Name="Key46" Grid.Column="10" Content="{Binding Symbols[46]}" Background="{StaticResource BtnRight_f5}"/>
+                <Button x:Name="CKey5" Grid.Column="11" Content="{Binding CommandKey[4]}"/>
 
             </Grid>
 
@@ -342,13 +344,13 @@
                     <ColumnDefinition Width="1.5*"/>
                 </Grid.ColumnDefinitions>
 
-                <Button Grid.Column="0" Content="{Binding CommandKey[5]}"/>
-                <Button Grid.Column="1" Content="{Binding CommandKey[6]}"/>
-                <Button Grid.Column="2" Content="{Binding CommandKey[7]}"/>
-                <Button Grid.Column="3" Content="{Binding CommandKey[8]}"/>
-                <Button Grid.Column="4" Content="{Binding CommandKey[7]}"/>
-                <Button Grid.Column="5" Content="{Binding CommandKey[6]}"/>
-                <Button Grid.Column="6" Content="{Binding CommandKey[5]}"/>
+                <Button x:Name="CKey6" Grid.Column="0" Content="{Binding CommandKey[5]}"/>
+                <Button x:Name="CKey7" Grid.Column="1" Content="{Binding CommandKey[6]}"/>
+                <Button x:Name="CKey8" Grid.Column="2" Content="{Binding CommandKey[7]}"/>
+                <Button x:Name="Key47" Grid.Column="3" Content="{Binding CommandKey[8]}"/>
+                <Button x:Name="CKey9" Grid.Column="4" Content="{Binding CommandKey[7]}"/>
+                <Button x:Name="CKey10" Grid.Column="5" Content="{Binding CommandKey[6]}"/>
+                <Button x:Name="CKey11" Grid.Column="6" Content="{Binding CommandKey[5]}"/>
 
             </Grid>
 

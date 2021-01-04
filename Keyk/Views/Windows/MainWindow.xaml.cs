@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using System.Windows.Controls;
 
 namespace Keyk.Views.Windows
 {
@@ -7,6 +8,7 @@ namespace Keyk.Views.Windows
         public MainWindow()
         {
             InitializeComponent();
+            IsTabStopProperty.OverrideMetadata(typeof(Control), new FrameworkPropertyMetadata(false));
         }
     }
 }
