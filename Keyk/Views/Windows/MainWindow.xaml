@@ -149,10 +149,28 @@
                             Background="#F222"
                             CornerRadius="10">
 
-                        <TextBlock Foreground="White" 
-                                   FontSize="14" FontFamily="Consolas"
-                                   Padding="0,1,0,0">
-                        </TextBlock>
+                        <Label Margin="0" Padding="0,1,0,0"
+                               FontSize="15" FontFamily="Consolas"
+                               Background="Transparent" Foreground="White"
+                               BorderThickness="0">
+
+                            <ItemsControl ItemsSource="{Binding ShowText}" 
+                                          BorderThickness="0">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Char}" 
+                                                   Foreground="{Binding Color}"
+                                                   TextWrapping="NoWrap"/>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+
+                        </Label>
 
                     </Border>
 
@@ -161,11 +179,28 @@
                             Background="#F222"
                             CornerRadius="10">
 
-                        <TextBlock Foreground="White" 
-                                   FontSize="14" FontFamily="Consolas"
-                                   Padding="0,1,0,0"
-                                   Text="{Binding EnterText}">
-                        </TextBlock>
+                        <Label Margin="0" Padding="0,1,0,0"
+                               FontSize="15" FontFamily="Consolas"
+                               Background="Transparent" Foreground="White"
+                               BorderThickness="0">
+
+                            <ItemsControl ItemsSource="{Binding PrintText}"
+                                          BorderThickness="0">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Char}" 
+                                                   Foreground="{Binding Color}"
+                                                   TextWrapping="NoWrap"/>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+
+                        </Label>
 
                     </Border>
                 </Grid>

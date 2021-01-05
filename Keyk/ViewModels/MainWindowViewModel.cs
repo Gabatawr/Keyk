@@ -1,19 +1,52 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Drawing;
 using System.Linq;
+using System.Net.Mime;
+using System.Text;
 using System.Threading;
 using Keyk.Infrastructure.Commands;
 using Keyk.Infrastructure.Commands.Base;
 using Keyk.ViewModels.Base;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.TextFormatting;
 using Keyk.Views.Windows;
 
 namespace Keyk.ViewModels
 {
     internal class MainWindowViewModel : ViewModel
     {
+        #region Clases
+        public class Symbol
+        {
+            public char Char { get; set; }
+            public SolidColorBrush Color { get; set; } = Brushes.White;
+        }
+
+        #endregion
+
+        #region Methods
+
+        private void OpacityChanged(Key k, double o)
+        {
+            for (int i = 0; i < _ckeys.Length; i++)
+            {
+                if (k == _ckeys[i])
+                {
+                    if (k == Key.System && Keyboard.IsKeyDown(Key.RightAlt)) i++;
+                    if (Application.Current.MainWindow?.FindName("CKey" + i) is Button btn) btn.Opacity = o;
+                    if (k == Key.System && Keyboard.IsKeyDown(Key.LeftAlt)) break;
+                }
+            }
+        }
+
+        #endregion
+
         #region Fields
         //------------------------------------------------------------------------------
 
@@ -62,6 +95,11 @@ namespace Keyk.ViewModels
         {
             Symbols = Keyboard.IsKeyToggled(Key.CapsLock) ? _symbolsShift : _symbols;
             CommandKey = _commandKey;
+
+            ShowText = new();
+            PrintText = new();
+
+            ShowText.Add(new Symbol() { Char = '@', Color = Brushes.Red} );
         }
 
         #region Commands
@@ -121,11 +159,7 @@ namespace Keyk.ViewModels
 
         private void ExecuteBackspaceDownCommand(KeyEventArgs e)
         {
-            if (EnterText?.Length == 1)
-                EnterText = null;
-
-            else if (EnterText?.Length > 1)
-                EnterText = EnterText.Substring(0, EnterText.Length - 1);
+            if (PrintText.Count != 0) PrintText.RemoveAt(PrintText.Count - 1);
         }
         private bool CanExecuteBackspaceDownCommand(KeyEventArgs e) => e.Key == Key.Back;
 
@@ -209,8 +243,8 @@ namespace Keyk.ViewModels
             {
                 if (e.Key == _keys[i])
                 {
-                    EnterText += Symbols[i].ToString();
-                    ( (Button)(((MainWindow)e.Source).FindName("Key" + i)) ).Opacity = 1;
+                    PrintText.Add(new Symbol() { Char = Symbols[i] });
+                    if (Application.Current.MainWindow?.FindName("Key" + i) is Button btn) btn.Opacity = 1;
                 }
             }
         }
@@ -220,16 +254,7 @@ namespace Keyk.ViewModels
             foreach (var k in _keys) 
                 if (e.Key == k) return true;
 
-            for (int i = 0; i < _ckeys.Length; i++)
-            {
-                if (e.Key == _ckeys[i])
-                {
-                    if (e.Key == Key.System && Keyboard.IsKeyDown(Key.RightAlt)) i++;
-                    ((Button)(((MainWindow)e.Source).FindName("CKey" + i))).Opacity = 1;
-                    if (e.Key == Key.System && Keyboard.IsKeyDown(Key.LeftAlt)) break;
-                }
-            }
-
+            OpacityChanged(e.Key, 1);
             return false;
         }
 
@@ -255,9 +280,7 @@ namespace Keyk.ViewModels
             for (int i = 0; i < _keys.Length; i++)
             {
                 if (e.Key == _keys[i])
-                {
-                    ((Button)(((MainWindow)e.Source).FindName("Key" + i))).Opacity = 0.6;
-                }
+                    if (Application.Current.MainWindow?.FindName("Key" + i) is Button btn) btn.Opacity = 0.6;
             }
         }
 
@@ -266,16 +289,7 @@ namespace Keyk.ViewModels
             foreach (var k in _keys)
                 if (e.Key == k) return true;
 
-            for (int i = 0; i < _ckeys.Length; i++)
-            {
-                if (e.Key == _ckeys[i])
-                {
-                    if (e.Key == Key.System && Keyboard.IsKeyDown(Key.RightAlt)) i++;
-                    ((Button)(((MainWindow)e.Source).FindName("CKey" + i))).Opacity = 0.6;
-                    if (e.Key == Key.System && Keyboard.IsKeyDown(Key.LeftAlt)) break;
-                }
-            }
-
+            OpacityChanged(e.Key, 0.6);
             return false;
         }
 
@@ -325,14 +339,27 @@ namespace Keyk.ViewModels
         //---------------------------------------------------------------------
         #endregion
 
-        #region string : _EnterText
+        #region ObservableCollection<Symbol> : _PrintText
         //---------------------------------------------------------------------
 
-        private string _EnterText;
-        public string EnterText
+        private ObservableCollection<Symbol> _PrintText;
+        public ObservableCollection<Symbol> PrintText
         {
-            get => _EnterText;
-            set => Set(ref _EnterText, value);
+            get => _PrintText;
+            set => Set(ref _PrintText, value);
+        }
+
+        //---------------------------------------------------------------------
+        #endregion
+
+        #region ObservableCollection<Symbol> : _ShowText
+        //---------------------------------------------------------------------
+
+        private ObservableCollection<Symbol> _ShowText;
+        public ObservableCollection<Symbol> ShowText
+        {
+            get => _ShowText;
+            set => Set(ref _ShowText, value);
         }
 
         //---------------------------------------------------------------------
