@@ -1,21 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Drawing;
-using System.Linq;
-using System.Net.Mime;
-using System.Text;
-using System.Threading;
+using System.Diagnostics;
+using System.Timers;
 using Keyk.Infrastructure.Commands;
 using Keyk.Infrastructure.Commands.Base;
 using Keyk.ViewModels.Base;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.TextFormatting;
-using Keyk.Views.Windows;
 
 namespace Keyk.ViewModels
 {
@@ -44,11 +37,41 @@ namespace Keyk.ViewModels
                 }
             }
         }
+        private void OpacityChangedNextBtn()
+        {
+            char c = ShowText[PrintText.Count].Char;
+            int p = Array.IndexOf(_symbols, c);
+            if (p == -1) p = Array.IndexOf(_symbolsShift, c);
+
+            if (Application.Current.MainWindow?.FindName("Key" + p) is Button btnNext)
+            {
+                correctBtn = btnNext;
+                btnNext.Opacity = 0.60 + (0.35 - (0.35 * Difficulty));
+            }
+        }
+        private void OpacityChangedCorrectBtn()
+        {
+            if (correctBtn is not null) correctBtn.Opacity = 0.6;
+        }
+
+        private void GenerateSymbol()
+        {
+            int i = (int)(Difficulty * 100);
+            if (i < 7) i = 7;
+
+            char c = _difficultyLine[_rand.Next(i)];
+            while (c == ' ' && ShowText.Count > 0 && ShowText[^1].Char == ' ')
+                c = _difficultyLine[_rand.Next(i)];
+
+            ShowText.Add(new Symbol { Char = c });
+        }
 
         #endregion
 
         #region Fields
         //------------------------------------------------------------------------------
+
+        private static Random _rand = new Random();
 
         private readonly Key[] _keys = new[]
         {
@@ -87,6 +110,28 @@ namespace Keyk.ViewModels
             "Shift",
             "Ctrl", "Win", "Alt", "Space"
         };
+        private readonly char[] _difficultyLine = new[]
+        {
+            ' ', ' ', ' ', ' ', ' ', ' ',
+
+            'f', 'j', 'g', 'h', 't', 'y', 'b', 'n', 'r', 'u', 'v', 'm',
+            'd', 'k', 'e', 'i', 'c', ',',
+            's', 'l', 'w', 'o', 'x', '.',
+            'a', ';', 'q', 'p', 'z', '/',
+            '`', '-', '=', '[', ']', '\\', '\'',
+            '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+
+            'F', 'J', 'G', 'H', 'T', 'Y', 'B', 'N', 'R', 'U', 'V', 'M',
+            'D', 'K', 'E', 'I', 'C', '<',
+            'S', 'L', 'W', 'O', 'X', '>',
+            'A', ':', 'Q', 'P', 'Z', '?',
+            '~', '_', '+', '{', '}', '|', '"',
+            ')', '!', '@', '#', '$', '%', '^', '&', '*', '('
+        };
+
+        private Button correctBtn;
+        private Stopwatch timer;
+        private double countPressed;
 
         //------------------------------------------------------------------------------
         #endregion
@@ -97,9 +142,13 @@ namespace Keyk.ViewModels
             CommandKey = _commandKey;
 
             ShowText = new();
-            PrintText = new();
+            for (int i = 100; i > 0; --i) GenerateSymbol();
 
-            ShowText.Add(new Symbol() { Char = '@', Color = Brushes.Red} );
+            PrintText = new();
+            OpacityChangedNextBtn();
+
+            SpeedValue = "0";
+            timer = new Stopwatch();
         }
 
         #region Commands
@@ -137,7 +186,20 @@ namespace Keyk.ViewModels
                 );
             set => _DifficultyChangedCommand = value;
         }
-        private void ExecuteDifficultyChangedCommand(MouseEventArgs e) => Difficulty = e.GetPosition((IInputElement)e.Source).X / ((FrameworkElement)e.Source).ActualWidth;
+
+        private void ExecuteDifficultyChangedCommand(MouseEventArgs e)
+        {
+            Difficulty = e.GetPosition((IInputElement)e.Source).X / ((FrameworkElement)e.Source).ActualWidth;
+
+            ShowText.Clear();
+            PrintText.Clear();
+            FailsValue = 0;
+
+            for (int i = 100; i > 0; --i) GenerateSymbol();
+
+            OpacityChangedCorrectBtn();
+            OpacityChangedNextBtn();
+        }
         private bool CanExecuteDifficultyChangedCommand(MouseEventArgs e) => e.LeftButton == MouseButtonState.Pressed;
 
         //--------------------------------------------------------------------
@@ -160,6 +222,9 @@ namespace Keyk.ViewModels
         private void ExecuteBackspaceDownCommand(KeyEventArgs e)
         {
             if (PrintText.Count != 0) PrintText.RemoveAt(PrintText.Count - 1);
+
+            OpacityChangedCorrectBtn();
+            OpacityChangedNextBtn();
         }
         private bool CanExecuteBackspaceDownCommand(KeyEventArgs e) => e.Key == Key.Back;
 
@@ -244,7 +309,31 @@ namespace Keyk.ViewModels
                 if (e.Key == _keys[i])
                 {
                     PrintText.Add(new Symbol() { Char = Symbols[i] });
+
                     if (Application.Current.MainWindow?.FindName("Key" + i) is Button btn) btn.Opacity = 1;
+
+                    if (PrintText[^1].Char != ShowText[PrintText.Count - 1].Char)
+                    {
+                        PrintText[^1].Color = Brushes.Red;
+                        OpacityChangedCorrectBtn();
+                        FailsValue++;
+                    }
+
+                    if (PrintText.Count >= 10)
+                    {
+                        ShowText.RemoveAt(0);
+                        PrintText.RemoveAt(0);
+                        GenerateSymbol();
+                    }
+
+                    countPressed++;
+                    if (timer.IsRunning)
+                    {
+                        int s = timer.Elapsed.Seconds;
+                        if (s > 0) SpeedValue = $"{Math.Round((countPressed / s * 60), 0)}";
+                    }
+
+                    break;
                 }
             }
         }
@@ -280,7 +369,12 @@ namespace Keyk.ViewModels
             for (int i = 0; i < _keys.Length; i++)
             {
                 if (e.Key == _keys[i])
+                {
                     if (Application.Current.MainWindow?.FindName("Key" + i) is Button btn) btn.Opacity = 0.6;
+
+                    OpacityChangedNextBtn();
+                    break;
+                }
             }
         }
 
@@ -296,15 +390,121 @@ namespace Keyk.ViewModels
         //--------------------------------------------------------------------
         #endregion
 
+
+        #region Command : _StopCommand
+        //--------------------------------------------------------------------
+
+        private Command _StopCommand;
+        public Command StopCommand
+        {
+            get => _StopCommand ?? new ActionCommand
+            (
+                param => ExecuteStopCommand((RoutedEventArgs)param),
+                param => CanExecuteStopCommand((RoutedEventArgs)param)
+            );
+            set => _StopCommand = value;
+        }
+        private void ExecuteStopCommand(RoutedEventArgs e)
+        {
+            timer.Reset();
+
+            StartVisibility = Visibility.Visible;
+            StopVisibility = Visibility.Collapsed;
+
+            countPressed = 0;
+            SpeedValue = "0";
+        }
+        private bool CanExecuteStopCommand(RoutedEventArgs e) => true;
+
+        //--------------------------------------------------------------------
+        #endregion
+
+        #region Command : _StartCommand
+        //--------------------------------------------------------------------
+
+        private Command _StartCommand;
+        public Command StartCommand
+        {
+            get => _StartCommand ?? new ActionCommand
+                (
+                    param => ExecuteStartCommand((RoutedEventArgs)param),
+                    param => CanExecuteStartCommand((RoutedEventArgs)param)
+                );
+            set => _StartCommand = value;
+        }
+        private void ExecuteStartCommand(RoutedEventArgs e)
+        {
+            timer.Start();
+
+            StartVisibility = Visibility.Collapsed;
+            StopVisibility = Visibility.Visible;
+        }
+        private bool CanExecuteStartCommand(RoutedEventArgs e) => true;
+
+        //--------------------------------------------------------------------
+        #endregion
+
         //------------------------------------------------------------------------------
         #endregion
 
         #region Properties
         //------------------------------------------------------------------------------
 
+        #region Visibility : _StopVisibility
+        //---------------------------------------------------------------------
+
+        private Visibility _StopVisibility = Visibility.Collapsed;
+        public Visibility StopVisibility
+        {
+            get => _StopVisibility;
+            set => Set(ref _StopVisibility, value);
+        }
+
+        //---------------------------------------------------------------------
+        #endregion
+
+        #region Visibility : _StartVisibility
+        //---------------------------------------------------------------------
+
+        private Visibility _StartVisibility = Visibility.Visible;
+        public Visibility StartVisibility
+        {
+            get => _StartVisibility;
+            set => Set(ref _StartVisibility, value);
+        }
+
+        //---------------------------------------------------------------------
+        #endregion
+
+        #region string : _SpeedValue
+        //---------------------------------------------------------------------
+
+        private string _SpeedValue;
+        public string SpeedValue
+        {
+            get => _SpeedValue;
+            set => Set(ref _SpeedValue, value);
+        }
+
+        //---------------------------------------------------------------------
+        #endregion
+
+        #region int : _FailsValue
+        //---------------------------------------------------------------------
+
+        private int _FailsValue;
+        public int FailsValue
+        {
+            get => _FailsValue;
+            set => Set(ref _FailsValue, value);
+        }
+
+        //---------------------------------------------------------------------
+        #endregion
+
         #region double : _Difficulty
         //---------------------------------------------------------------------
-        private double _Difficulty = 0.2;
+        private double _Difficulty = 0.15;
         public double Difficulty
         {
             get => _Difficulty;

@@ -49,13 +49,16 @@
                 <Grid>
                     <Button ToolTip="Start"
                             Style="{StaticResource BtnControl}"
-                            Background="LawnGreen">
+                            Background="LawnGreen"
+                            vm:MouseCommands.Click="{Binding StartCommand}"
+                            Visibility="{Binding StartVisibility}">
                     </Button>
 
                     <Button ToolTip="Stop"
                             Style="{StaticResource BtnControl}"
                             Background="Red"
-                            Visibility="Collapsed">
+                            vm:MouseCommands.Click="{Binding StopCommand}"
+                            Visibility="{Binding StopVisibility}">
                     </Button>
 
                     <Grid Height="14" Width="30" HorizontalAlignment="Right"
@@ -92,16 +95,16 @@
                         Speed:</TextBlock>
                             <TextBlock HorizontalAlignment="Right"
                                        Foreground="White"
-                                       Margin="4,0,0,0">
-                        0</TextBlock>
+                                       Margin="4,0,0,0"
+                                       Text="{Binding SpeedValue}"/>
                         </WrapPanel>
 
                         <WrapPanel HorizontalAlignment="Right">
                             <TextBlock Foreground="White">
                         Fails:</TextBlock>
                             <TextBlock Foreground="White"
-                                       Margin="4,0,0,0">
-                        0</TextBlock>
+                                       Margin="4,0,0,0"
+                                       Text="{Binding FailsValue}"/>
                         </WrapPanel>
 
                     </Grid>

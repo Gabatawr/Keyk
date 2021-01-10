@@ -1,10 +1,29 @@
 ﻿using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace Keyk.ViewModels
 {
     public class MouseCommands
     {
+        #region Click
+
+        public static readonly DependencyProperty ClickProperty = DependencyProperty.RegisterAttached
+        (
+            "Click", typeof(ICommand), typeof(MouseCommands),
+            new FrameworkPropertyMetadata(new PropertyChangedCallback(ClickChanged))
+        );
+        private static void ClickChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+            => ((Button)d).Click += element_Click;
+        static void element_Click(object sender, RoutedEventArgs e)
+            => GetClick((Button)sender).Execute(e);
+        public static void SetClick(UIElement element, ICommand value)
+            => element.SetValue(ClickProperty, value);
+        public static ICommand GetClick(UIElement element)
+            => (ICommand)element.GetValue(ClickProperty);
+
+        #endregion
+
         #region MouseUp
 
         public static readonly DependencyProperty MouseUpProperty = DependencyProperty.RegisterAttached
