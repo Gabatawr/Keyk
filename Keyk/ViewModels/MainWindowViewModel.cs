@@ -412,7 +412,6 @@ namespace Keyk.ViewModels
             StopVisibility = Visibility.Collapsed;
 
             countPressed = 0;
-            SpeedValue = "0";
         }
         private bool CanExecuteStopCommand(RoutedEventArgs e) => true;
 
@@ -438,6 +437,9 @@ namespace Keyk.ViewModels
 
             StartVisibility = Visibility.Collapsed;
             StopVisibility = Visibility.Visible;
+
+            SpeedValue = "0";
+            FailsValue = 0;
         }
         private bool CanExecuteStartCommand(RoutedEventArgs e) => true;
 
