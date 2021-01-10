@@ -1,156 +1,16 @@
 ﻿using System;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Timers;
 using Keyk.Infrastructure.Commands;
 using Keyk.Infrastructure.Commands.Base;
-using Keyk.ViewModels.Base;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using Keyk.Models;
 
 namespace Keyk.ViewModels
 {
-    internal class MainWindowViewModel : ViewModel
+    partial class MainWindowViewModel
     {
-        #region Clases
-        public class Symbol
-        {
-            public char Char { get; set; }
-            public SolidColorBrush Color { get; set; } = Brushes.White;
-        }
-
-        #endregion
-
-        #region Methods
-
-        private void OpacityChanged(Key k, double o)
-        {
-            for (int i = 0; i < _ckeys.Length; i++)
-            {
-                if (k == _ckeys[i])
-                {
-                    if (k == Key.System && Keyboard.IsKeyDown(Key.RightAlt)) i++;
-                    if (Application.Current.MainWindow?.FindName("CKey" + i) is Button btn) btn.Opacity = o;
-                    if (k == Key.System && Keyboard.IsKeyDown(Key.LeftAlt)) break;
-                }
-            }
-        }
-        private void OpacityChangedNextBtn()
-        {
-            char c = ShowText[PrintText.Count].Char;
-            int p = Array.IndexOf(_symbols, c);
-            if (p == -1) p = Array.IndexOf(_symbolsShift, c);
-
-            if (Application.Current.MainWindow?.FindName("Key" + p) is Button btnNext)
-            {
-                correctBtn = btnNext;
-                btnNext.Opacity = 0.60 + (0.35 - (0.35 * Difficulty));
-            }
-        }
-        private void OpacityChangedCorrectBtn()
-        {
-            if (correctBtn is not null) correctBtn.Opacity = 0.6;
-        }
-
-        private void GenerateSymbol()
-        {
-            int i = (int)(Difficulty * 100);
-            if (i < 7) i = 7;
-
-            char c = _difficultyLine[_rand.Next(i)];
-            while (c == ' ' && ShowText.Count > 0 && ShowText[^1].Char == ' ')
-                c = _difficultyLine[_rand.Next(i)];
-
-            ShowText.Add(new Symbol { Char = c });
-        }
-
-        #endregion
-
-        #region Fields
-        //------------------------------------------------------------------------------
-
-        private static Random _rand = new Random();
-
-        private readonly Key[] _keys = new[]
-        {
-            Key.Oem3, Key.D1, Key.D2, Key.D3, Key.D4, Key.D5, Key.D6, Key.D7, Key.D8, Key.D9, Key.D0, Key.OemMinus, Key.OemPlus,
-            Key.Q, Key.W, Key.E, Key.R, Key.T, Key.Y, Key.U, Key.I, Key.O, Key.P, Key.OemOpenBrackets, Key.Oem6, Key.Oem5,
-            Key.A, Key.S, Key.D, Key.F, Key.G, Key.H, Key.J, Key.K, Key.L, Key.Oem1, Key.OemQuotes,
-            Key.Z, Key.X, Key.C, Key.V, Key.B, Key.N, Key.M, Key.OemComma, Key.OemPeriod, Key.OemQuestion, Key.Space
-        };
-        private readonly Key[] _ckeys = new[]
-        {
-            Key.Back,
-            Key.Tab,
-            Key.CapsLock, Key.Enter,
-            Key.LeftShift, Key.RightShift,
-            Key.LeftCtrl, Key.LWin, Key.System, Key.System, Key.RWin, Key.RightCtrl
-        };
-        private readonly char[] _symbols = new[]
-        {
-            '`', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=',
-            'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', '\\',
-            'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', '\'',
-            'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/', ' '
-        };
-        private readonly char[] _symbolsShift = new[]
-        {
-            '~', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+',
-            'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', '{', '}', '|',
-            'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', ':', '"',
-            'Z', 'X', 'C', 'V', 'B', 'N', 'M', '<', '>', '?', ' '
-        };
-        private readonly string[] _commandKey = new[]
-        {
-            "Backspace",
-            "Tab",
-            "Caps Lock", "Enter",
-            "Shift",
-            "Ctrl", "Win", "Alt", "Space"
-        };
-        private readonly char[] _difficultyLine = new[]
-        {
-            ' ', ' ', ' ', ' ', ' ', ' ',
-
-            'f', 'j', 'g', 'h', 't', 'y', 'b', 'n', 'r', 'u', 'v', 'm',
-            'd', 'k', 'e', 'i', 'c', ',',
-            's', 'l', 'w', 'o', 'x', '.',
-            'a', ';', 'q', 'p', 'z', '/',
-            '`', '-', '=', '[', ']', '\\', '\'',
-            '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-
-            'F', 'J', 'G', 'H', 'T', 'Y', 'B', 'N', 'R', 'U', 'V', 'M',
-            'D', 'K', 'E', 'I', 'C', '<',
-            'S', 'L', 'W', 'O', 'X', '>',
-            'A', ':', 'Q', 'P', 'Z', '?',
-            '~', '_', '+', '{', '}', '|', '"',
-            ')', '!', '@', '#', '$', '%', '^', '&', '*', '('
-        };
-
-        private Button correctBtn;
-        private Stopwatch timer;
-        private double countPressed;
-
-        //------------------------------------------------------------------------------
-        #endregion
-
-        public MainWindowViewModel()
-        {
-            Symbols = Keyboard.IsKeyToggled(Key.CapsLock) ? _symbolsShift : _symbols;
-            CommandKey = _commandKey;
-
-            ShowText = new();
-            for (int i = 100; i > 0; --i) GenerateSymbol();
-
-            PrintText = new();
-            OpacityChangedNextBtn();
-
-            SpeedValue = "0";
-            timer = new Stopwatch();
-        }
-
         #region Commands
         //------------------------------------------------------------------------------
 
@@ -326,11 +186,11 @@ namespace Keyk.ViewModels
                         GenerateSymbol();
                     }
 
-                    countPressed++;
-                    if (timer.IsRunning)
+                    _countPressed++;
+                    if (_timer.IsRunning)
                     {
-                        int s = timer.Elapsed.Seconds;
-                        if (s > 0) SpeedValue = $"{Math.Round((countPressed / s * 60), 0)}";
+                        int s = _timer.Elapsed.Seconds;
+                        if (s > 0) SpeedValue = $"{Math.Round((_countPressed / s * 60), 0)}";
                     }
 
                     break;
@@ -390,7 +250,6 @@ namespace Keyk.ViewModels
         //--------------------------------------------------------------------
         #endregion
 
-
         #region Command : _StopCommand
         //--------------------------------------------------------------------
 
@@ -406,12 +265,12 @@ namespace Keyk.ViewModels
         }
         private void ExecuteStopCommand(RoutedEventArgs e)
         {
-            timer.Reset();
+            _timer.Reset();
 
             StartVisibility = Visibility.Visible;
             StopVisibility = Visibility.Collapsed;
 
-            countPressed = 0;
+            _countPressed = 0;
         }
         private bool CanExecuteStopCommand(RoutedEventArgs e) => true;
 
@@ -433,7 +292,7 @@ namespace Keyk.ViewModels
         }
         private void ExecuteStartCommand(RoutedEventArgs e)
         {
-            timer.Start();
+            _timer.Start();
 
             StartVisibility = Visibility.Collapsed;
             StopVisibility = Visibility.Visible;
@@ -444,127 +303,6 @@ namespace Keyk.ViewModels
         private bool CanExecuteStartCommand(RoutedEventArgs e) => true;
 
         //--------------------------------------------------------------------
-        #endregion
-
-        //------------------------------------------------------------------------------
-        #endregion
-
-        #region Properties
-        //------------------------------------------------------------------------------
-
-        #region Visibility : _StopVisibility
-        //---------------------------------------------------------------------
-
-        private Visibility _StopVisibility = Visibility.Collapsed;
-        public Visibility StopVisibility
-        {
-            get => _StopVisibility;
-            set => Set(ref _StopVisibility, value);
-        }
-
-        //---------------------------------------------------------------------
-        #endregion
-
-        #region Visibility : _StartVisibility
-        //---------------------------------------------------------------------
-
-        private Visibility _StartVisibility = Visibility.Visible;
-        public Visibility StartVisibility
-        {
-            get => _StartVisibility;
-            set => Set(ref _StartVisibility, value);
-        }
-
-        //---------------------------------------------------------------------
-        #endregion
-
-        #region string : _SpeedValue
-        //---------------------------------------------------------------------
-
-        private string _SpeedValue;
-        public string SpeedValue
-        {
-            get => _SpeedValue;
-            set => Set(ref _SpeedValue, value);
-        }
-
-        //---------------------------------------------------------------------
-        #endregion
-
-        #region int : _FailsValue
-        //---------------------------------------------------------------------
-
-        private int _FailsValue;
-        public int FailsValue
-        {
-            get => _FailsValue;
-            set => Set(ref _FailsValue, value);
-        }
-
-        //---------------------------------------------------------------------
-        #endregion
-
-        #region double : _Difficulty
-        //---------------------------------------------------------------------
-        private double _Difficulty = 0.15;
-        public double Difficulty
-        {
-            get => _Difficulty;
-            set => Set(ref _Difficulty, value);
-        }
-        //---------------------------------------------------------------------
-        #endregion
-
-        #region char[] : _Symbols
-        //---------------------------------------------------------------------
-
-        private char[] _Symbols;
-        public char[] Symbols
-        {
-            get => _Symbols;
-            set => Set(ref _Symbols, value);
-        }
-
-        //---------------------------------------------------------------------
-        #endregion
-
-        #region string[] : _CommandKey
-        //---------------------------------------------------------------------
-
-        private string[] _CommandKey;
-        public string[] CommandKey
-        {
-            get => _CommandKey;
-            set => Set(ref _CommandKey, value);
-        }
-
-        //---------------------------------------------------------------------
-        #endregion
-
-        #region ObservableCollection<Symbol> : _PrintText
-        //---------------------------------------------------------------------
-
-        private ObservableCollection<Symbol> _PrintText;
-        public ObservableCollection<Symbol> PrintText
-        {
-            get => _PrintText;
-            set => Set(ref _PrintText, value);
-        }
-
-        //---------------------------------------------------------------------
-        #endregion
-
-        #region ObservableCollection<Symbol> : _ShowText
-        //---------------------------------------------------------------------
-
-        private ObservableCollection<Symbol> _ShowText;
-        public ObservableCollection<Symbol> ShowText
-        {
-            get => _ShowText;
-            set => Set(ref _ShowText, value);
-        }
-
-        //---------------------------------------------------------------------
         #endregion
 
         //------------------------------------------------------------------------------

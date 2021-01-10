@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Input;
 
-namespace Keyk.ViewModels
+namespace Keyk.Infrastructure.Commands
 {
     public class KeyboardCommands
     {

@@ -2,7 +2,7 @@
 using System.Windows.Controls;
 using System.Windows.Input;
 
-namespace Keyk.ViewModels
+namespace Keyk.Infrastructure.Commands
 {
     public class MouseCommands
     {

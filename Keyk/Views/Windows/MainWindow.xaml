@@ -15,14 +15,14 @@
 
         Background="#F333"
         
-        vm:MouseCommands.MouseLeftButtonDown="{Binding MoveApplicationCommand}"
+        cmd:MouseCommands.MouseLeftButtonDown="{Binding MoveApplicationCommand}"
         
-        vm:KeyboardCommands.BackspaceDown="{Binding BackspaceDownCommand}"
-        vm:KeyboardCommands.ShiftDown="{Binding ShiftDownCommand}"
-        vm:KeyboardCommands.ShiftUp="{Binding ShiftUpCommand}"
-        vm:KeyboardCommands.CapsLockDown="{Binding CapsLockDownCommand}"
-        vm:KeyboardCommands.PrintKeyDown="{Binding PrintKeyDownCommand}"
-        vm:KeyboardCommands.PrintKeyUp="{Binding PrintKeyUpCommand}">
+        cmd:KeyboardCommands.BackspaceDown="{Binding BackspaceDownCommand}"
+        cmd:KeyboardCommands.ShiftDown="{Binding ShiftDownCommand}"
+        cmd:KeyboardCommands.ShiftUp="{Binding ShiftUpCommand}"
+        cmd:KeyboardCommands.CapsLockDown="{Binding CapsLockDownCommand}"
+        cmd:KeyboardCommands.PrintKeyDown="{Binding PrintKeyDownCommand}"
+        cmd:KeyboardCommands.PrintKeyUp="{Binding PrintKeyUpCommand}">
 
     <!--........................................................................-->
     <Window.DataContext>
@@ -50,14 +50,14 @@
                     <Button ToolTip="Start"
                             Style="{StaticResource BtnControl}"
                             Background="LawnGreen"
-                            vm:MouseCommands.Click="{Binding StartCommand}"
+                            cmd:MouseCommands.Click="{Binding StartCommand}"
                             Visibility="{Binding StartVisibility}">
                     </Button>
 
                     <Button ToolTip="Stop"
                             Style="{StaticResource BtnControl}"
                             Background="Red"
-                            vm:MouseCommands.Click="{Binding StopCommand}"
+                            cmd:MouseCommands.Click="{Binding StopCommand}"
                             Visibility="{Binding StopVisibility}">
                     </Button>
 
@@ -123,8 +123,8 @@
 
                     <Border x:Name="DifficultyBorder" ToolTip="Difficulty"
                             Opacity="0.6" Margin="0.5,0.5" CornerRadius="6"
-                            vm:MouseCommands.MouseMove="{Binding DifficultyChangedCommand}"
-                            vm:MouseCommands.MouseLeftButtonDown="{Binding DifficultyChangedCommand}">
+                            cmd:MouseCommands.MouseMove="{Binding DifficultyChangedCommand}"
+                            cmd:MouseCommands.MouseLeftButtonDown="{Binding DifficultyChangedCommand}">
 
                         <Border.Background>
                             <LinearGradientBrush StartPoint="0,1">
@@ -146,7 +146,7 @@
                         <RowDefinition/>
                         <RowDefinition/>
                     </Grid.RowDefinitions>
-
+                    <!--........................................................................-->
                     <Border Grid.Row="0" DockPanel.Dock="Top" 
                             Height="20" Padding="12,0,12,0"
                             Background="#F222"
@@ -176,7 +176,7 @@
                         </Label>
 
                     </Border>
-
+                    <!--........................................................................-->
                     <Border Grid.Row="1" DockPanel.Dock="Bottom" 
                             Height="20" Padding="12,0,12,0"
                             Background="#F222"
@@ -206,6 +206,7 @@
                         </Label>
 
                     </Border>
+                    <!--........................................................................-->
                 </Grid>
                 <!--........................................................................-->
             </DockPanel>
@@ -250,7 +251,7 @@
                     <ColumnDefinition Width="1*"/>
                     <ColumnDefinition Width="2*"/>
                 </Grid.ColumnDefinitions>
-
+                <!--........................................................................-->
                 <Button x:Name="Key0" Grid.Column="0" Content="{Binding Symbols[0]}" Background="{StaticResource BtnLeft_f5}"/>
                 <Button x:Name="Key1" Grid.Column="1" Content="{Binding Symbols[1]}" Background="{StaticResource BtnLeft_f5}"/>
                 <Button x:Name="Key2" Grid.Column="2" Content="{Binding Symbols[2]}" Background="{StaticResource BtnLeft_f5}"/>
@@ -265,7 +266,7 @@
                 <Button x:Name="Key11" Grid.Column="11" Content="{Binding Symbols[11]}" Background="{StaticResource BtnRight_f5}"/>
                 <Button x:Name="Key12" Grid.Column="12" Content="{Binding Symbols[12]}" Background="{StaticResource BtnRight_f5}"/>
                 <Button x:Name="CKey0" Grid.Column="13" Content="{Binding CommandKey[0]}"/>
-
+                <!--........................................................................-->
             </Grid>
 
             <Grid Grid.Row="1">
@@ -286,7 +287,7 @@
                     <ColumnDefinition Width="1*"/>
                     <ColumnDefinition Width="1.5*"/>
                 </Grid.ColumnDefinitions>
-
+                <!--........................................................................-->
                 <Button x:Name="CKey1" Grid.Column="0" Content="{Binding CommandKey[1]}"/>
                 <Button x:Name="Key13" Grid.Column="1" Content="{Binding Symbols[13]}" Background="{StaticResource BtnLeft_f5}"/>
                 <Button x:Name="Key14" Grid.Column="2" Content="{Binding Symbols[14]}" Background="{StaticResource BtnLeft_f4}"/>
@@ -301,7 +302,7 @@
                 <Button x:Name="Key23" Grid.Column="11" Content="{Binding Symbols[23]}" Background="{StaticResource BtnRight_f5}"/>
                 <Button x:Name="Key24" Grid.Column="12" Content="{Binding Symbols[24]}" Background="{StaticResource BtnRight_f5}"/>
                 <Button x:Name="Key25" Grid.Column="13" Content="{Binding Symbols[25]}" Background="{StaticResource BtnRight_f5}"/>
-
+                <!--........................................................................-->
             </Grid>
 
             <Grid Grid.Row="2">
@@ -321,7 +322,7 @@
                     <ColumnDefinition Width="1*"/>
                     <ColumnDefinition Width="2*"/>
                 </Grid.ColumnDefinitions>
-
+                <!--........................................................................-->
                 <Button x:Name="CKey2" Grid.Column="0" Content="{Binding CommandKey[2]}"/>
                 <Button x:Name="Key26" Grid.Column="1" Content="{Binding Symbols[26]}" Background="{StaticResource BtnLeft_f5}"/>
                 <Button x:Name="Key27" Grid.Column="2" Content="{Binding Symbols[27]}" Background="{StaticResource BtnLeft_f4}"/>
@@ -335,7 +336,7 @@
                 <Button x:Name="Key35" Grid.Column="10" Content="{Binding Symbols[35]}" Background="{StaticResource BtnRight_f5}"/>
                 <Button x:Name="Key36" Grid.Column="11" Content="{Binding Symbols[36]}" Background="{StaticResource BtnRight_f5}"/>
                 <Button x:Name="CKey3" Grid.Column="12" Content="{Binding CommandKey[3]}"/>
-
+                <!--........................................................................-->
             </Grid>
 
             <Grid Grid.Row="3">
@@ -354,7 +355,7 @@
                     <ColumnDefinition Width="1*"/>
                     <ColumnDefinition Width="2.5*"/>
                 </Grid.ColumnDefinitions>
-
+                <!--........................................................................-->
                 <Button x:Name="CKey4" Grid.Column="0" Content="{Binding CommandKey[4]}"/>
                 <Button x:Name="Key37" Grid.Column="1" Content="{Binding Symbols[37]}" Background="{StaticResource BtnLeft_f5}"/>
                 <Button x:Name="Key38" Grid.Column="2" Content="{Binding Symbols[38]}" Background="{StaticResource BtnLeft_f4}"/>
@@ -367,7 +368,7 @@
                 <Button x:Name="Key45" Grid.Column="9" Content="{Binding Symbols[45]}" Background="{StaticResource BtnRight_f4}"/>
                 <Button x:Name="Key46" Grid.Column="10" Content="{Binding Symbols[46]}" Background="{StaticResource BtnRight_f5}"/>
                 <Button x:Name="CKey5" Grid.Column="11" Content="{Binding CommandKey[4]}"/>
-
+                <!--........................................................................-->
             </Grid>
 
             <Grid Grid.Row="4">
